@@ -1,3 +1,6 @@
+#Data dir
+outputFiles/
+
 # Logs
 logs
 *.log
