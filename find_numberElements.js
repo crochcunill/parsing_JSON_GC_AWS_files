@@ -8,12 +8,12 @@ var fileName1, fileName2
 var array1=[]
 var array2=[]
 
-obj=myFileLength("awsListAccounts_LZ0_admin.json","Accounts", "obj.Accounts.length")
-//obj=myFileLength("cspmAccountSummary_LZ0.json","Accounts", "obj.length")
-//obj3=myFileLength("awsAuthDetails_LZ0.json", "Roles","obj.RoleDetailList.length")
+//obj=myFileLength("./outputFiles/awsListAccounts_LZ0_admin.json","Accounts", "obj.Accounts.length")
+obj=myFileLength("./outputFiles/cspmAccountSummary_LZ0.json","Accounts", "obj.length")
+//obj3=myFileLength("./outputFiles/awsAuthDetails_LZ0.json", "Roles","obj.RoleDetailList.length")
 
-//obj2=myFileLength("awsPolicies_LZ0.json", "Policies","obj.Policies.length")
-//obj4=findPolicies("cspmAccountSummary_LZ0.json", "awsPolicies_LZ0.json","obj.Policies.length")
+//obj2=myFileLength("./outputFiles/awsPolicies_LZ0.json", "Policies","obj.Policies.length")
+//obj4=findPolicies("./outputFiles/cspmAccountSummary_LZ0.json", "awsPolicies_LZ0.json","obj.Policies.length")
 
 
 

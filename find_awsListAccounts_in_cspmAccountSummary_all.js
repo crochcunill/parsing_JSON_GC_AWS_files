@@ -20,7 +20,7 @@ var array2_arn=[]
 
 //obj4=findPolicies("awsRoles_LZ0_admin.json", "cspmRoles.json")
 
-obj4=findPolicies("./outputFiles/awsListAccounts_LZ0_admin.json", "./outputFiles/cspmRoles.json")
+obj4=findPolicies("./outputFiles/awsListAccounts_LZ0_admin.json", "./outputFiles/cspmAccountSummary_LZ0.json")
 
 function findPolicies(fileName1,fileName2){
     fs.readFile(fileName1, 'utf8',  handleFile)
@@ -33,9 +33,9 @@ function findPolicies(fileName1,fileName2){
         //for(var i = 0; i < obj.Roles.length; i++)
          for(var i = 0; i < obj.Accounts.length; i++)
             {
-                array1_id.push(obj.Accounts[i].Id)
-                array1_name.push(obj.Accounts[i].Name)
-                array1_arn.push(obj.Accounts[i].Arn)
+                array1_id.push(obj.id)
+                //array1_name.push(obj.Accounts[i].Name)
+                //array1_arn.push(obj.Accounts[i].Arn)
             }
             console.log("1>>>>>>> Number of elements for " + fileName1 + ": " + array1_id.length)
 
@@ -48,10 +48,10 @@ function findPolicies(fileName1,fileName2){
         // console.log(obj.length)
         for(var j = 0; j < obj2.length; j++)
             {
-                array2_id.push(obj2[j].policyId)
-                array2_arn.push(obj2[j].arn)
+                array2_id.push(obj2[j].externalId)
+
             }
-        console.log("2>>>>>>>  Number of elements for " + fileName2 + ": " + array2_name.length)
+        console.log("2>>>>>>>  Number of elements for " + fileName2 + ": " + array2_id.length)
         displayResults(fileName1,fileName2)
     }
 }
@@ -61,10 +61,10 @@ function displayResults(fileName1,fileName2){
         var count=0
         for(var j = 0; j < array1_name.length; j++)
         {
-            if ((array2_name.includes(array1_name[j]) === false) || (array2_id.includes(array1_id[j]) === false)|| (array2_arn.includes(array1_arn[j]) === false) )
+            if ((array2_id.includes(array1_id[j]) === false))
             {
                 console.log("The id " + array1_id[j] + " from " + fileName1 + " was not found in " + fileName2)
-                console.log("The arn " + array1_arn[j] + " from " + fileName1 + " was not found in " + fileName2)
+                //console.log("The arn " + array1_arn[j] + " from " + fileName1 + " was not found in " + fileName2)
                 console.log(count + "..................................................")
                 count++   
             }  
