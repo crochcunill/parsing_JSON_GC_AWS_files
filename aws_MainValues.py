@@ -5,19 +5,18 @@ import subprocess
 import datetime
 from os.path import exists
 
-# First export the variables
-AWS_ACCESS_KEY_ID="ASIAU3S6ZAK4DIXKFW52"
-AWS_SECRET_ACCESS_KEY="R+VdMI3oI+MkbbZj5ZhmBJQrv48u+1aWQkC95isx"
-AWS_SESSION_TOKEN="FwoGZXIvYXdzEOj//////////wEaDEfnD/1DyI44GFhFbiLvAQKCJGstp1w7EqA7x0wnIX6Cjk8m3quAXSxb6te/Nne9/XxpaMoJ2ewGo+2MLMOgmB/RwjcbBkPUQEcZeAW6z4tetm1y4M7tkAp+lzSJlpKyTsJnbb6av0JKwmIfFjVI6AZ+hiAbEjcKDpoMNfEUY8SVDX+NzhhfJz+3lAqTmUY7a07LPNRruBf6BWB4v+9ApX9VcBicD5wuKXceeyJTlFqKNKCAuugoLWsEC//9m1qHWK+vlmAvvjsMDUFKaLN/NcI9RuXgeK1VZVbGtmFCUHx1t1l6JkuWA2zNRAiA1xZkv8sbeZKieDxhfneq3dvbKPzv3JYGMjLPmZWqgHj4JA5Yn6GroN6//U/CTLCc0dtWnjqWCIJPaRghihuIM/OujPUHtN4dUlxzqg=="
-AWS_DEFAULT_REGION="ca-central-1"
+# To run the script you need to export the following values as env variables, or if executing
+# the script in GiHub action, you need to add these values as secrets
+#  AWS_ACCESS_KEY_ID
+#  AWS_SECRET_ACCESS_KEY
+#  AWS_SESSION_TOKEN
+#  AWS_DEFAULT_REGION
 
 
-os.environ['AWS_ACCESS_KEY_ID'] = str(AWS_ACCESS_KEY_ID)
-os.environ['AWS_SECRET_ACCESS_KEY'] = str(AWS_SECRET_ACCESS_KEY)
-os.environ['AWS_SESSION_TOKEN'] = str(AWS_SESSION_TOKEN)
-os.environ['AWS_DEFAULT_REGION'] = str(AWS_DEFAULT_REGION)
-
-
+AWS_ACCESS_KEY_ID=os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY=os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_SESSION_TOKEN=os.environ.get('AWS_SESSION_TOKEN')
+AWS_DEFAULT_REGION=os.environ.get('AWS_DEFAULT_REGION')
 
 
 awsAccountUsed="BCGOV_MASTER_admin_umafubc9"

@@ -1,13 +1,8 @@
 # This action uses the values stored in SECRETS, specifically. we store the following values
-# AWS_ACCESS_KEY_ID
-# AWS_SECRET_ACCESS_KEY
-# AWS_SESSION_TOKEN
-# AWS_DEFAULT_REGION
-#
-# To connect to the CloudGuard API you either need the login/pwd or the token (see ReadMe file)
-# CLOUDGUARD_LOGIN
-# CLOUDGUARD_PWD
-# CLOUDGUARD_TOKEN 
+#  AWS_ACCESS_KEY_ID
+#  AWS_SECRET_ACCESS_KEY
+#  AWS_SESSION_TOKEN
+#  AWS_DEFAULT_REGION
 #
 # The following values are necessary to send the report to the recipient
 # MAIL_ADDRESS
@@ -51,7 +46,13 @@ jobs:
            sudo apt-get install awscli
            echo `aws --version`
            awsVERSION=${aws --version}
-           
+
+
+    - name: Install jq tool 
+      run: |
+           sudo apt install -y jq
+           echo `jq --version`
+
     - name: Run the test
       continue-on-error: true
       run: |
