@@ -17,7 +17,7 @@ var array2_name=[]
 var array2_id=[]
 var array2_arn=[]
 
-obj4=findPolicies("awsAuthDetails_LZ0_admin.json", "cspmCloudIamPolicy.json")
+obj4=findPolicies("./outputFiles/awsAuthDetails_LZ0_admin.json", "./outputFiles/cspmCloudIamPolicy.json")
 
 function findPolicies(fileName1,fileName2){
     fs.readFile(fileName1, 'utf8',  handleFile)
