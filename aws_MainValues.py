@@ -1,8 +1,7 @@
 
 import os
-import json
-import subprocess
-import datetime
+
+import suppFunct
 from os.path import exists
 
 # To run the script you need to export the following values as env variables, or if executing
@@ -20,71 +19,10 @@ AWS_DEFAULT_REGION=os.environ.get('AWS_DEFAULT_REGION')
 
 
 awsAccountUsed="BCGOV_MASTER_admin_umafubc9"
+resultsFile="./resultsKeyParameters.json"
 
 
-##############################################
-# Functions
-##############################################
-
-def saveValues(Name,Value,flag):
-    with open(resultsFile, 'a') as f:
-        if flag: #if true save with a comma at the end
-            f.write('   '+ Name.rstrip('\r\n') + ' : ' +Value.rstrip('\r\n')+ ',\n')
-        else:# false no comma
-            f.write('   '+ Name.rstrip('\r\n') + ' : ' +Value.rstrip('\r\n')+ '\n')
-                
-            
-def addQuotes(Value):
-    return '\"'+ Value.rstrip('\r\n') + '\"'           
-
-def addTab(Value):
-    return '   '+ Value     
-
-
-def getOutput():
-    if os.path.exists('./borrar.json'):
-        fp = open('./borrar.json', "r")
-        output=fp.read()
-        fp.close()
-        os.remove('./borrar.json')
-        return output
-
-def getOutputApi(fileName,node):
-    if os.path.exists(fileName):    
-        os.system( ' jq \'.' + node + ' | length\' '+ fileName + ' > borrar.json')
-        output=getOutput()
-        delFile("./borrar.json")
-        return output
-
-    
-def closeResultsFile():
-    with open(resultsFile, 'a') as f:
-        f.write('   \"TestInformation\": ' +' {\n')
-        f.write('       \"DateTime\" : "' +str(datetime.datetime.now())+ '",\n')
-        f.write('       \"awsAccountUsed\" : "' + awsAccountUsed + '",\n')
-        f.write('       \"AWS_DEFAULT_REGION\" : "' + str(AWS_DEFAULT_REGION) + '"\n')
-        f.write('   }\n')
-        f.write('}')
-
-def delFile(fileName):
-    if os.path.exists(fileName):
-        os.remove(fileName)
-        return
-
-##############################################
-# Checks the existence of the results file, if already exist it will be deleted...
-##############################################
-resultsFile="./mainParameters.json"
-
-if os.path.exists(resultsFile):
-    print("Script will remove  the existing file " + resultsFile)
-    os.remove(resultsFile)
-
-print("Script will (re)create the file " + resultsFile)
-with open(resultsFile, 'w') as f:
-    f.write('{\n')
-
-
+suppFunct.checkExistCreate(resultsFile)
 
 
 ############################################################################################
@@ -98,28 +36,28 @@ with open(resultsFile, 'w') as f:
 # Checks the number of AWS users with access to LZ2 Landing Zone (IAM > Users)
 ##############################################    
 os.system('aws iam  get-account-authorization-details > apiResults.json')
-output=getOutputApi('./apiResults.json','UserDetailList') 
-saveValues(addQuotes('awsNumberIamUsers'),output, True)   
+output=suppFunct.getOutputApi('./apiResults.json','UserDetailList') 
+suppFunct.saveValues(resultsFile,suppFunct.addQuotes('awsNumberIamUsers'),output, True)   
 ##############################################
 # Checks the number of IAM groups inLZ2 Landing Zone (IAM > User Groups)
 ##############################################    
 #os.system('aws iam  get-account-authorization-details  | jq \'.GroupDetailList | length\' > borrar.json')
-output=getOutputApi('./apiResults.json','GroupDetailList')
-saveValues(addQuotes('awsNumberIamGroups'),output, True)    
+output=suppFunct.getOutputApi('./apiResults.json','GroupDetailList')
+suppFunct.saveValues(resultsFile,suppFunct.addQuotes('awsNumberIamGroups'),output, True)    
 ##############################################
 # Checks the number of IAM roles in LZ2 Landing Zone (IAM > Roles)
 ##############################################    
 #os.system('aws iam  get-account-authorization-details  | jq \'.RoleDetailList | length\' > borrar.json')
-output=getOutputApi('./apiResults.json','RoleDetailList')
-saveValues(addQuotes('awsNumberIamRoles'),output, True)   
+output=suppFunct.getOutputApi('./apiResults.json','RoleDetailList')
+suppFunct.saveValues(resultsFile,suppFunct.addQuotes('awsNumberIamRoles'),output, True)   
 ##############################################
 # Checks the number of IAM Policies in LZ2 Landing Zone  (IAM > Policies)
 ##############################################    
 #os.system('aws iam  get-account-authorization-details  | jq \'.Policies | length\' > borrar.json')
-output=getOutputApi('./apiResults.json','Policies')
-saveValues(addQuotes('awsNumberIamPolicies'),output, True)   
+output=suppFunct.getOutputApi('./apiResults.json','Policies')
+suppFunct.saveValues(resultsFile,suppFunct.addQuotes('awsNumberIamPolicies'),output, True)   
 
-delFile('./apiResults.json')
+suppFunct.delFile('./apiResults.json')
 
 
 ##############################################
@@ -128,11 +66,11 @@ delFile('./apiResults.json')
 os.system('aws s3 ls > ./apiResults.txt')
 
 os.system('wc -l < ./apiResults.txt >borrar.json')
-numberOfBuckets=getOutput() 
-saveValues(addQuotes('awsNumber_S3_Buckets'),numberOfBuckets, True)    
+numberOfBuckets=suppFunct.getOutput('./borrar.json') 
+suppFunct.saveValues(resultsFile,suppFunct.addQuotes('awsNumber_S3_Buckets'),numberOfBuckets, True)    
 
 with open(resultsFile, 'a') as f:
-    f.write(addTab(addQuotes('S3Buckets_AccessPolicy')) +' : {\n')
+    f.write(suppFunct.addTab(suppFunct.addQuotes('S3Buckets_AccessPolicy')) +' : {\n')
     
 myApiResults=open('./apiResults.txt',"r")
 
@@ -149,18 +87,18 @@ for line in myApiResults:
     
     if myCounter<int(numberOfBuckets):
         if len(blocks)>2: 
-            saveValues(addTab(addQuotes(myLine[2])),addQuotes('Has Public Access Block'),True)
+            suppFunct.saveValues(resultsFile,suppFunct.addTab(suppFunct.addQuotes(myLine[2])),suppFunct.addQuotes('Has Public Access Block'),True)
         else:
-            saveValues(addTab(addQuotes(myLine[2])),addQuotes('Does not have a Public Access Block'),True)
+            suppFunct.saveValues(resultsFile,suppFunct.addTab(suppFunct.addQuotes(myLine[2])),suppFunct.addQuotes('Does not have a Public Access Block'),True)
     else:
         if len(blocks)>2: 
-            saveValues(addTab(addQuotes(myLine[2])),addQuotes('Has Public Access Block'),False)
+            suppFunct.saveValues(resultsFile,suppFunct.addTab(suppFunct.addQuotes(myLine[2])),suppFunct.addQuotes('Has Public Access Block'),False)
         else:
-            saveValues(addTab(addQuotes(myLine[2])),addQuotes('Does not have a Public Access Block'),False)
+            suppFunct.saveValues(resultsFile,suppFunct.addTab(suppFunct.addQuotes(myLine[2])),suppFunct.addQuotes('Does not have a Public Access Block'),False)
    
     myCounter+=1    
-    delFile('./myBlocks.txt')
-    delFile('./myBlocks.json')
+    suppFunct.delFile('./myBlocks.txt')
+    suppFunct.delFile('./myBlocks.json')
       
 
 
@@ -175,14 +113,14 @@ for line in myApiResults:
     
 #    if myCounter<int(numberOfBuckets):
 #        if (blocks[0].rstrip('\r\n')=='true' and blocks[1].rstrip('\r\n')=='true' and blocks[2].rstrip('\r\n')=='true' and blocks[3].rstrip('\r\n')=='true'):
-#            saveValues(addTab(addQuotes('isBlocked_'+myLine[2])),"True","True")
+#            saveValues(addTab(suppFunct.addQuotes('isBlocked_'+myLine[2])),"True","True")
 #        else:
-#            saveValues(addTab(addQuotes('isBlocked_'+myLine[2])),"False","True")
+#            saveValues(addTab(suppFunct.addQuotes('isBlocked_'+myLine[2])),"False","True")
 #    else:
 #        if (blocks[0].rstrip('\r\n')=='true' and blocks[1].rstrip('\r\n')=='true' and blocks[2].rstrip('\r\n')=='true' and blocks[3].rstrip('\r\n')=='true'):
-#            saveValues(addTab(addQuotes('isBlocked_'+myLine[2])),"True","False")
+#            saveValues(addTab(suppFunct.addQuotes('isBlocked_'+myLine[2])),"True","False")
 #        else:
-#            saveValues(addTab(addQuotes('isBlocked_'+myLine[2])),"False","False")
+#            saveValues(addTab(suppFunct.addQuotes('isBlocked_'+myLine[2])),"False","False")
                         
 #    myCounter+=1    
 #    delFile('./myBlocks.txt')
@@ -197,15 +135,15 @@ with open(resultsFile, 'a') as f:
 # Checks the number of roles associated to the admin user in LZ2
 ##############################################    
 os.system('aws iam  list-roles | jq \'.Roles | length\' > borrar.json')
-output=getOutput() 
-saveValues(addQuotes('awsNumberRoles'),output, True)    
+output=suppFunct.getOutput('./borrar.json') 
+suppFunct.saveValues(resultsFile,suppFunct.addQuotes('awsNumberRoles'),output, True)    
 
 ##############################################
 # Checks the number of Policies available to the AWS account in LZ2
 ##############################################    
 os.system('aws iam  list-policies | jq \'.Policies | length\' > borrar.json')
-output=getOutput() 
-saveValues(addQuotes('awsNumberAvailablePolicies'),output, True)   
+output=suppFunct.getOutput('./borrar.json') 
+suppFunct.saveValues(resultsFile,suppFunct.addQuotes('awsNumberAvailablePolicies'),output, True)   
 
 
 
@@ -213,8 +151,8 @@ saveValues(addQuotes('awsNumberAvailablePolicies'),output, True)
 # Checks the number of accounts in LZ2
 ##############################################
 os.system('aws organizations list-accounts | jq \'.Accounts | length\' > borrar.json')
-output=getOutput()    
-saveValues(addQuotes('awsTotalNumberAccounts'),output,True)    
+output=suppFunct.getOutput('./borrar.json')   
+suppFunct.saveValues(resultsFile,suppFunct.addQuotes('awsTotalNumberAccounts'),output,True)    
 
 ##############################################
 # Using the list-organizational-units-for-parent   API
@@ -231,17 +169,17 @@ myApiResults=open('./apiResults.txt',"r")
 numberOrganizationalUnits=0
 
 with open(resultsFile, 'a') as f:
-        f.write(addTab(addQuotes('OrganizationsInformation')) +' : {\n')
+        f.write(suppFunct.addTab(suppFunct.addQuotes('OrganizationsInformation')) +' : {\n')
 
 for line in myApiResults:
     myLine = line.replace('\"',"").replace('\'',"").split(",") #We get the Id and the Name of the organizational Units
     os.system('aws organizations list-accounts-for-parent --parent-id ' + myLine[0] + ' | jq \'.Accounts | length\' > borrar.json')
-    output=getOutput() 
-    saveValues(addTab(addQuotes('accountsInOU_'+myLine[1])),output,True)
+    output=suppFunct.getOutput('./borrar.json') 
+    suppFunct.saveValues(resultsFile,suppFunct.addTab(suppFunct.addQuotes('accountsInOU_'+myLine[1])),output,True)
     numberOrganizationalUnits+=1
     
 with open(resultsFile, 'a') as f:
-    saveValues(addTab(addQuotes('numberOrganizationUnits')),str(numberOrganizationalUnits),  False)
+    suppFunct.saveValues(resultsFile,suppFunct.addTab(suppFunct.addQuotes('numberOrganizationUnits')),str(numberOrganizationalUnits),  False)
     f.write('    },\n')
 
 
@@ -250,10 +188,10 @@ with open(resultsFile, 'a') as f:
 
 
 
-delFile('./apiResults.txt')
-delFile('./apiResults.json')
+suppFunct.delFile('./apiResults.txt')
+suppFunct.delFile('./apiResults.json')
 
-closeResultsFile()
+suppFunct.closeResultsFile(resultsFile,awsAccountUsed)
 
 
 #Perhaps check how many   "AttachedManagedPolicies":  are associated to each role
